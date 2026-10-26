@@ -120,7 +120,8 @@ table.lines td{padding:4px 8px;border-bottom:1px solid #eef3f7;vertical-align:to
   html,body{background:#fff}
   .wrap{display:block;padding:0;margin:0;max-width:none}
   .stage{overflow:visible;display:block}
-  .paper{box-shadow:none;width:auto;min-height:0;margin:0;padding:12mm 12mm}
+  /* la feuille remplit toute la hauteur A4 pour que le pied de page (poussé par .spacer) reste en bas */
+  .paper{box-shadow:none;width:auto;min-height:296mm;margin:0;padding:12mm 12mm}
   table.lines th,.pright .dt,.totals .r.ttc,.footlogo img,.pfoot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{size:A4;margin:0}
 }

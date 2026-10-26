@@ -145,7 +145,7 @@ export default function Page() {
 
   useEffect(() => {
     try {
-      const r = localStorage.getItem("ecopump_doc");
+      const r = localStorage.getItem("ecopump_doc_v2");
       if (r) setS({ ...blank(), ...JSON.parse(r) });
     } catch (e) {}
     const d = new Date();
@@ -155,7 +155,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!ready) return;
-    try { localStorage.setItem("ecopump_doc", JSON.stringify(S)); } catch (e) {}
+    try { localStorage.setItem("ecopump_doc_v2", JSON.stringify(S)); } catch (e) {}
   }, [S, ready]);
 
   const up = (patch) => setS((s) => ({ ...s, ...patch }));
@@ -192,7 +192,6 @@ export default function Page() {
       <header className="appbar no-print">
         <div className="brand">ECO PUMP AFRIK<span>Devis & Factures</span></div>
         <div className="sp" />
-        <button onClick={() => setS(JSON.parse(JSON.stringify(SAMPLE)))}>Exemple</button>
         <button onClick={() => setS(blank())}>Nouveau</button>
         <button className="primary" onClick={() => window.print()}>Imprimer / PDF</button>
       </header>
