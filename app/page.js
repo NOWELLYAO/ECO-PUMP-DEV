@@ -13,27 +13,6 @@ const COMPANY = {
     "SARL U au Capital de 1 000 000 F CFA -  Siège Social : Cocody Angré 7e Tranche - Tel/FAX : 0707806359   N° RCCM : CI-ABJ-03-2025-B13-01148   N°CC : 2502156E - ECOBANK N° CI059 01010 122345076001 80 - E-mail : ouanlo.ouattara@ecopumpafrik.com - Site WEB : www.ecopumpafrik.com",
 };
 
-/* ====== Propositions des listes déroulantes ====== */
-const DELAIS = [
-  "Disponible en stock",
-  "1 Mois date Commande",
-  "2-3 Mois date Commande",
-  "3-4 Mois date Commande",
-  "6-7 Mois date Commande",
-  "Voir différents items",
-  "Sur commande",
-];
-const PAIEMENTS = [
-  "60% Acompte - Solde à la Livraison",
-  "50% Acompte - Solde à la Livraison",
-  "100% à la commande",
-  "Paiement à la livraison",
-  "30 jours fin de mois",
-  "Virement bancaire",
-  "Chèque",
-  "Espèces",
-];
-
 /* ====== Montant en lettres (français) ====== */
 const U = ["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf"];
 function deux(n, plural) {
@@ -72,65 +51,60 @@ function titre(s) {
 }
 
 /* ====== utilitaires ====== */
-const money = (n) => (Number(n) || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (n) => (Math.round(n) || 0).toLocaleString("fr-FR").replace(/ /g, " ");
 const today = () => new Date().toISOString().slice(0, 10);
+const stamp = () => {
+  const d = new Date();
+  return ("0" + d.getDate()).slice(-2) + ("0" + (d.getMonth() + 1)).slice(-2) + String(d.getFullYear()).slice(-2);
+};
 const frDate = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return d + "/" + m + "/" + y; };
-const ddmmyy = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return d + m + y.slice(-2); };
-const suffixFromName = (name) =>
-  (name || "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z]/g, "").slice(0, 4).toUpperCase();
-const newItem = () => ({ ref: "", desig: "", qte: 1, pu: "", remise: "" });
-const num = (v) => Number(v) || 0;
+const newItem = () => ({ code: "", ref: "", desig: "", dcode: "", delai: "", qte: 1, pu: 0 });
 
 const blank = () => ({
   type: "DEVIS",
+  number: "DV-" + stamp() + "-001",
   date: today(),
-  seq: 1,
   currency: "F CFA",
-  regime: "TEE", // "TEE" = Taxe d'État de l'Entreprenant (sans TVA) · "TVA" = assujetti
+  regime: "TEE", // "TEE" = Taxe d'État de l'Entreprenant (sans TVA) · "TVA" = assujetti (18%)
   tva: 18,
-  client: { name: "", contact: "", phone: "", cc: "", email: "" },
+  client: { name: "", contact: "", phone: "" },
   items: [newItem()],
-  modal: { delai: "2-3 Mois date Commande", paiement: "60% Acompte - Solde à la Livraison" },
+  modal: { delai: "Voir différents items", paiement: "60% Acompte - Solde à la Livraison" },
   note: "Nos commandes se veulent fermes et irrévocables",
 });
 
 const SAMPLE = {
   type: "DEVIS",
-  date: "2025-06-22",
-  seq: 5,
+  number: "DV-300625-001",
+  date: "2025-06-30",
   currency: "F CFA",
   regime: "TVA",
   tva: 18,
-  client: { name: "RICD", contact: "DIARASSOUBA ALI", phone: "0708073434", cc: "", email: "" },
-  modal: { delai: "2-3 Mois date Commande", paiement: "60% Acompte - Solde à la Livraison" },
+  client: { name: "BA-HYDRO", contact: "M. COULIBALY", phone: "+226 55203454" },
+  modal: { delai: "Voir différents items", paiement: "60% Acompte - Solde à la Livraison" },
   note: "Nos commandes se veulent fermes et irrévocables",
   items: [
-    { ref: "98624258", desig: "Pompe SL1.50.65.30.2.50D.C", qte: 2, pu: 2100000, remise: 0 },
-    { ref: "99369650", desig: "Coffret LC 231 2x 1-9 DOL 3x460 PI CE", qte: 1, pu: 630000, remise: 0 },
-    { ref: "96090992", desig: "Pied d'assise Auto coupling set DN65 Cl.", qte: 2, pu: 327600, remise: 0 },
-    { ref: "98989672", desig: "Chaine de levage Lift. chain 320kg 10m SS cert. cpl.", qte: 2, pu: 151200, remise: 0 },
-    { ref: "62500014", desig: "Floteur Float switch set MS1 3pcs 10m + wallh", qte: 1, pu: 226800, remise: 0 },
-    { ref: "91048889", desig: "Surpr Hydro Multi-E 2 CRE 15-4", qte: 1, pu: 10150000, remise: 0 },
-    { ref: "92889532", desig: "Pompe ciculation simple CM3-5 A-R-I-E-AQQE C1-A-A-N", qte: 2, pu: 403200, remise: 0 },
-    { ref: "92889531", desig: "Pompe ciculation simple CM3-5 A-R-I-E-AQQE C1-A-A-N", qte: 2, pu: 403200, remise: 0 },
+    { code: "A1", ref: "DWK", desig: "Pompe GRUNDFOS DWK.E.10.150.220.5.1D.R", dcode: "96922748", delai: "6-7 Mois", qte: 1, pu: 13885000 },
+    { code: "A2", ref: "KIT_GM", desig: "Kit Garniture mécanique DWK", dcode: "96884177", delai: "3-4 Mois", qte: 1, pu: 485000 },
+    { code: "A3", ref: "Kit_Pal", desig: "Kit Palier DWK", dcode: "96884331", delai: "", qte: 1, pu: 380000 },
+    { code: "B2", ref: "DMX", desig: "Pompe Doseuse GRUNDFOS DMX 190-10 B-PVC/V/C-X-E1U3U3XEMAG", dcode: "99773483", delai: "3-4 Mois", qte: 2, pu: 2625000 },
   ],
 };
 
 export default function Page() {
   const [S, setS] = useState(blank());
   const [ready, setReady] = useState(false);
-  const [stampTime, setStampTime] = useState("");
 
+  // charge le brouillon sauvegardé (par navigateur)
   useEffect(() => {
     try {
       const r = localStorage.getItem("ecopump_doc");
-      if (r) setS({ ...blank(), ...JSON.parse(r) });
+      if (r) setS(JSON.parse(r));
     } catch (e) {}
-    const d = new Date();
-    setStampTime(("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2));
     setReady(true);
   }, []);
 
+  // sauvegarde auto
   useEffect(() => {
     if (!ready) return;
     try { localStorage.setItem("ecopump_doc", JSON.stringify(S)); } catch (e) {}
@@ -139,11 +113,11 @@ export default function Page() {
   const up = (patch) => setS((s) => ({ ...s, ...patch }));
   const upClient = (k, v) => setS((s) => ({ ...s, client: { ...s.client, [k]: v } }));
   const upModal = (k, v) => setS((s) => ({ ...s, modal: { ...s.modal, [k]: v } }));
-  // on stocke la saisie telle quelle (string) ; la conversion en nombre se fait au calcul,
-  // ce qui permet de vider complètement un champ sans qu'un 0 ne revienne.
   const setItem = (i, k, v) =>
     setS((s) => {
-      const items = s.items.map((it, j) => (j === i ? { ...it, [k]: v } : it));
+      const items = s.items.map((it, j) =>
+        j === i ? { ...it, [k]: k === "qte" || k === "pu" ? parseFloat(v) || 0 : v } : it
+      );
       return { ...s, items };
     });
   const addItem = () => setS((s) => ({ ...s, items: [...s.items, newItem()] }));
@@ -154,14 +128,10 @@ export default function Page() {
     });
 
   const isTEE = S.regime === "TEE";
-  const lineTotal = (it) => num(it.qte) * num(it.pu) * (1 - num(it.remise) / 100);
-  const sub = S.items.reduce((a, it) => a + lineTotal(it), 0);
-  const tva = isTEE ? 0 : sub * (num(S.tva) / 100);
+  const sub = S.items.reduce((a, it) => a + it.qte * it.pu, 0);
+  const tva = isTEE ? 0 : sub * (S.tva / 100);
   const ttc = sub + tva;
   const cur = S.currency || "F CFA";
-  const suffix = suffixFromName(S.client.name);
-  const number =
-    (S.type === "FACTURE" ? "FACT" : "DEV") + "-" + ddmmyy(S.date) + "-" + String(S.seq).padStart(2, "0") + (suffix ? "-" + suffix : "");
   const lettres =
     titre(enLettres(ttc)) + " " + (cur.replace("F CFA", "Francs CFA").replace("FCFA", "Francs CFA") || "Francs CFA");
 
@@ -183,19 +153,15 @@ export default function Page() {
             <button aria-pressed={S.type === "DEVIS"} onClick={() => up({ type: "DEVIS" })}>Devis</button>
             <button aria-pressed={S.type === "FACTURE"} onClick={() => up({ type: "FACTURE" })}>Facture</button>
           </div>
-          <div className="fld">
-            <label htmlFor="num">Numéro (généré automatiquement)</label>
-            <input id="num" value={number} readOnly className="ro" />
-          </div>
           <div className="row2">
+            <div className="fld"><label htmlFor="num">Numéro</label>
+              <input id="num" value={S.number} onChange={(e) => up({ number: e.target.value })} /></div>
             <div className="fld"><label htmlFor="date">Date</label>
               <input id="date" type="date" value={S.date} onChange={(e) => up({ date: e.target.value })} /></div>
-            <div className="fld"><label htmlFor="seq">N° séquence</label>
-              <input id="seq" type="number" min="1" value={S.seq} onChange={(e) => up({ seq: e.target.value })} /></div>
           </div>
 
           <h2 style={{ marginTop: 6 }}>Client — Facturer à</h2>
-          <div className="fld"><label htmlFor="cnm">Nom / Société <em>(→ suffixe {suffix || "…"})</em></label>
+          <div className="fld"><label htmlFor="cnm">Nom / Société</label>
             <input id="cnm" value={S.client.name} onChange={(e) => upClient("name", e.target.value)} /></div>
           <div className="row2">
             <div className="fld"><label htmlFor="cct">Contact</label>
@@ -203,19 +169,13 @@ export default function Page() {
             <div className="fld"><label htmlFor="cph">Téléphone</label>
               <input id="cph" value={S.client.phone} onChange={(e) => upClient("phone", e.target.value)} /></div>
           </div>
-          <div className="row2">
-            <div className="fld"><label htmlFor="ccc">Numéro CC</label>
-              <input id="ccc" value={S.client.cc} onChange={(e) => upClient("cc", e.target.value)} /></div>
-            <div className="fld"><label htmlFor="cem">E-mail</label>
-              <input id="cem" value={S.client.email} onChange={(e) => upClient("email", e.target.value)} /></div>
-          </div>
 
-          <h2 style={{ marginTop: 6 }}>Articles <em>(n° Item auto : 10, 20, 30…)</em></h2>
+          <h2 style={{ marginTop: 6 }}>Articles</h2>
           <div className="items">
             {S.items.map((it, i) => (
               <div className="item" key={i}>
                 <div className="top">
-                  <span className="ix">{(i + 1) * 10}</span>
+                  <input value={it.code} placeholder="Item" aria-label="Item" onChange={(e) => setItem(i, "code", e.target.value)} />
                   <input value={it.ref} placeholder="Référence" aria-label="Réf" onChange={(e) => setItem(i, "ref", e.target.value)} />
                   <button className="del" title="Supprimer" onClick={() => delItem(i)}>×</button>
                 </div>
@@ -223,14 +183,16 @@ export default function Page() {
                   <span className="lbl">Désignation</span>
                   <input value={it.desig} placeholder="Désignation de l'article" onChange={(e) => setItem(i, "desig", e.target.value)} />
                 </div>
-                <div className="grid3">
+                <div className="grid3" style={{ marginBottom: 8 }}>
+                  <div><span className="lbl">Code</span>
+                    <input value={it.dcode} onChange={(e) => setItem(i, "dcode", e.target.value)} /></div>
                   <div><span className="lbl">Qté</span>
-                    <input type="number" step="0.01" value={it.qte} onChange={(e) => setItem(i, "qte", e.target.value)} /></div>
-                  <div><span className="lbl">Prix unitaire HT</span>
-                    <input type="number" value={it.pu} onChange={(e) => setItem(i, "pu", e.target.value)} /></div>
-                  <div><span className="lbl">Remise %</span>
-                    <input type="number" step="0.1" value={it.remise} onChange={(e) => setItem(i, "remise", e.target.value)} /></div>
+                    <input type="number" value={it.qte} onChange={(e) => setItem(i, "qte", e.target.value)} /></div>
+                  <div><span className="lbl">Délai</span>
+                    <input value={it.delai} onChange={(e) => setItem(i, "delai", e.target.value)} /></div>
                 </div>
+                <div><span className="lbl">Prix unitaire HT</span>
+                  <input type="number" value={it.pu} onChange={(e) => setItem(i, "pu", e.target.value)} /></div>
               </div>
             ))}
           </div>
@@ -245,17 +207,15 @@ export default function Page() {
           <div className="row2">
             {!isTEE ? (
               <div className="fld"><label htmlFor="tva">TVA (%)</label>
-                <input id="tva" type="number" step="0.1" value={S.tva} onChange={(e) => up({ tva: e.target.value })} /></div>
+                <input id="tva" type="number" step="0.1" value={S.tva} onChange={(e) => up({ tva: parseFloat(e.target.value) || 0 })} /></div>
             ) : null}
             <div className="fld"><label htmlFor="dev">Devise</label>
               <input id="dev" value={S.currency} onChange={(e) => up({ currency: e.target.value })} /></div>
           </div>
           <div className="fld"><label htmlFor="deliv">Délai de livraison</label>
-            <input id="deliv" list="delais" value={S.modal.delai} onChange={(e) => upModal("delai", e.target.value)} />
-            <datalist id="delais">{DELAIS.map((o) => <option key={o} value={o} />)}</datalist></div>
+            <input id="deliv" value={S.modal.delai} onChange={(e) => upModal("delai", e.target.value)} /></div>
           <div className="fld"><label htmlFor="pay">Mode de paiement</label>
-            <input id="pay" list="paiements" value={S.modal.paiement} onChange={(e) => upModal("paiement", e.target.value)} />
-            <datalist id="paiements">{PAIEMENTS.map((o) => <option key={o} value={o} />)}</datalist></div>
+            <input id="pay" value={S.modal.paiement} onChange={(e) => upModal("paiement", e.target.value)} /></div>
           <div className="fld"><label htmlFor="note">Note</label>
             <input id="note" value={S.note} onChange={(e) => up({ note: e.target.value })} /></div>
         </section>
@@ -263,30 +223,34 @@ export default function Page() {
         {/* ========== Document A4 ========== */}
         <section className="stage" aria-label="Aperçu du document">
           <article className="paper">
-            <div className="topdate">{frDate(S.date)} {stampTime}</div>
-
             <div className="phead">
-              <div className="pleft">
+              <div>
                 <div className="logo"><img src="/logo.png" alt="ECO PUMP AFRIK" /></div>
-                <div className="cname">{COMPANY.name}</div>
-                <div className="contacts">
+                <div className="contact">
+                  <div className="cn">{COMPANY.name}</div>
                   <div className="ci"><img src="/icon-phone.png" alt="" />{COMPANY.phone}</div>
                   <div className="ci"><img src="/icon-mail.png" alt="" />{COMPANY.mail}</div>
-                  <div className="ci"><span className="badge">◉</span>{COMPANY.addr}</div>
-                  <div className="ci"><span className="badge">@</span><span className="link">{COMPANY.web}</span></div>
+                  <div className="ci"><span className="dot">⬤</span>{COMPANY.addr}</div>
+                  <div className="ci"><span className="dot">🌐</span>{COMPANY.web}</div>
                 </div>
               </div>
-
-              <div className="pright">
+              <div className="titlebox">
                 <div className="dt">{S.type}</div>
-                <div className="dnum">{number}</div>
-                <div className="billto">
-                  <div className="h">{S.type === "FACTURE" ? "Facturer À :" : "Devis pour :"}</div>
+                <div className="meta">
+                  <div><b>N°</b><span>{S.number}</span></div>
+                  <div><b>Date</b><span>{frDate(S.date)}</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="billbar">
+              <div />
+              <div className="billto">
+                <div className="h">{S.type === "FACTURE" ? "Facturer à :" : "Devis pour :"}</div>
+                <div className="b">
                   <div className="nm">{S.client.name || "—"}</div>
-                  {S.client.phone ? <div className="link">{S.client.phone}</div> : null}
-                  {S.client.cc ? <div>N°CC : {S.client.cc}</div> : null}
                   {S.client.contact ? <div>{S.client.contact}</div> : null}
-                  {S.client.email ? <div>{S.client.email}</div> : null}
+                  {S.client.phone ? <div>{S.client.phone}</div> : null}
                 </div>
               </div>
             </div>
@@ -294,58 +258,57 @@ export default function Page() {
             <table className="lines">
               <thead>
                 <tr>
-                  <th className="c" style={{ width: "6%" }}>Item</th>
+                  <th className="c" style={{ width: "7%" }}>Item</th>
                   <th style={{ width: "13%" }}>REF</th>
                   <th>Désignation</th>
-                  <th className="num" style={{ width: "8%" }}>Qté</th>
-                  <th className="num" style={{ width: "15%" }}>PU (HT)</th>
-                  <th className="c" style={{ width: "6%" }}>R</th>
+                  <th className="c" style={{ width: "7%" }}>Qté</th>
+                  <th className="num" style={{ width: "16%" }}>PU (HT)</th>
                   <th className="num" style={{ width: "16%" }}>TOTAL (HT)</th>
                 </tr>
               </thead>
               <tbody>
-                {S.items.map((it, i) => (
-                  <tr key={i}>
-                    <td className="c">{(i + 1) * 10}</td>
-                    <td>{it.ref}</td>
-                    <td>{it.desig}</td>
-                    <td className="num">{money(it.qte)}</td>
-                    <td className="num">{money(it.pu)}</td>
-                    <td className="c">{it.remise ? it.remise + "%" : ""}</td>
-                    <td className="num">{money(lineTotal(it))}</td>
-                  </tr>
-                ))}
+                {S.items.map((it, i) => {
+                  const mini = [it.dcode ? "Code : " + it.dcode : "", it.delai ? "Délai : " + it.delai : ""].filter(Boolean).join("   ·   ");
+                  return (
+                    <tr key={i}>
+                      <td className="c"><span className="itcode">{it.code}</span></td>
+                      <td>{it.ref}</td>
+                      <td className="desig"><div className="nm">{it.desig}</div>{mini ? <div className="mini">{mini}</div> : null}</td>
+                      <td className="c">{it.qte}</td>
+                      <td className="num">{fmt(it.pu)}</td>
+                      <td className="num">{fmt(it.qte * it.pu)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 
-            <div className="midrow">
-              <div className="modalites">
-                <div className="mh">Modalités</div>
-                <div className="mr"><b>Délai de livraison :</b> <i>{S.modal.delai}</i></div>
-                <div className="mr"><b>Mode de payement :</b> <i>{S.modal.paiement}</i></div>
-                {S.note ? <div className="note">{S.note}</div> : null}
-              </div>
-
+            <div className="totwrap">
               <div className="totals">
                 {isTEE ? (
-                  <div className="r ttc"><b>TOTAL À PAYER :</b><span>{money(ttc)}</span></div>
+                  <div className="r ttc"><b>TOTAL À PAYER :</b><span>{fmt(ttc)} {cur}</span></div>
                 ) : (
                   <>
-                    <div className="r"><b>SOUS-TOTAL :</b><span>{money(sub)}</span></div>
-                    <div className="r"><b>TVA ({S.tva}%) :</b><span>{money(tva)}</span></div>
-                    <div className="r ttc"><b>TOTAL TTC :</b><span>{money(ttc)}</span></div>
+                    <div className="r sub"><b>SOUS-TOTAL :</b><span>{fmt(sub)} {cur}</span></div>
+                    <div className="r tva"><b>TVA ({S.tva}%) :</b><span>{fmt(tva)} {cur}</span></div>
+                    <div className="r ttc"><b>TOTAL TTC :</b><span>{fmt(ttc)} {cur}</span></div>
                   </>
                 )}
               </div>
             </div>
-
-            <div className="lettres">{lettres}</div>
+            <div className="enlettres"><b>Arrêté à la somme de :</b> {lettres}.</div>
             {isTEE ? (
               <div className="tee">Montant non assujetti à la TVA — régime de la Taxe d'État de l'Entreprenant (TEE).</div>
             ) : null}
 
+            <div className="modal">
+              <div className="mh">Modalités</div>
+              <div className="mr"><b>Délai de livraison :</b><span>{S.modal.delai}</span></div>
+              <div className="mr"><b>Mode de paiement :</b><span>{S.modal.paiement}</span></div>
+            </div>
+            {S.note ? <div className="note">{S.note}</div> : null}
+
             <div className="spacer" />
-            <div className="footlogo"><img src="/logo.png" alt="" /></div>
             <div className="pfoot">{COMPANY.legal}</div>
           </article>
         </section>
