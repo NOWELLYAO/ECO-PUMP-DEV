@@ -33,6 +33,28 @@ const PAIEMENTS = [
   "Chèque",
   "Espèces",
 ];
+const DEVISES = ["F CFA", "EUR", "USD"];
+
+/* Menu déroulant avec option « Autre… » pour saisir une valeur libre */
+function Combo({ label, id, options, value, onChange }) {
+  const inList = options.includes(value);
+  return (
+    <div className="fld">
+      <label htmlFor={id}>{label}</label>
+      <select
+        id={id}
+        value={inList ? value : "__autre__"}
+        onChange={(e) => onChange(e.target.value === "__autre__" ? "" : e.target.value)}
+      >
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        <option value="__autre__">Autre (préciser)…</option>
+      </select>
+      {!inList ? (
+        <input style={{ marginTop: 6 }} placeholder="Saisir votre texte…" value={value} onChange={(e) => onChange(e.target.value)} />
+      ) : null}
+    </div>
+  );
+}
 
 /* ====== Montant en lettres (français) ====== */
 const U = ["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf"];
@@ -242,20 +264,13 @@ export default function Page() {
               <option value="TEE">Taxe d'État de l'Entreprenant (sans TVA)</option>
               <option value="TVA">Assujetti à la TVA</option>
             </select></div>
-          <div className="row2">
-            {!isTEE ? (
-              <div className="fld"><label htmlFor="tva">TVA (%)</label>
-                <input id="tva" type="number" step="0.1" value={S.tva} onChange={(e) => up({ tva: e.target.value })} /></div>
-            ) : null}
-            <div className="fld"><label htmlFor="dev">Devise</label>
-              <input id="dev" value={S.currency} onChange={(e) => up({ currency: e.target.value })} /></div>
-          </div>
-          <div className="fld"><label htmlFor="deliv">Délai de livraison</label>
-            <input id="deliv" list="delais" value={S.modal.delai} onChange={(e) => upModal("delai", e.target.value)} />
-            <datalist id="delais">{DELAIS.map((o) => <option key={o} value={o} />)}</datalist></div>
-          <div className="fld"><label htmlFor="pay">Mode de paiement</label>
-            <input id="pay" list="paiements" value={S.modal.paiement} onChange={(e) => upModal("paiement", e.target.value)} />
-            <datalist id="paiements">{PAIEMENTS.map((o) => <option key={o} value={o} />)}</datalist></div>
+          {!isTEE ? (
+            <div className="fld"><label htmlFor="tva">TVA (%)</label>
+              <input id="tva" type="number" step="0.1" value={S.tva} onChange={(e) => up({ tva: e.target.value })} /></div>
+          ) : null}
+          <Combo label="Devise" id="dev" options={DEVISES} value={S.currency} onChange={(v) => up({ currency: v })} />
+          <Combo label="Délai de livraison" id="deliv" options={DELAIS} value={S.modal.delai} onChange={(v) => upModal("delai", v)} />
+          <Combo label="Mode de paiement" id="pay" options={PAIEMENTS} value={S.modal.paiement} onChange={(v) => upModal("paiement", v)} />
           <div className="fld"><label htmlFor="note">Note</label>
             <input id="note" value={S.note} onChange={(e) => up({ note: e.target.value })} /></div>
         </section>
