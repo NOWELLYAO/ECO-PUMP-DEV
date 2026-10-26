@@ -123,7 +123,7 @@ table.lines td{padding:4px 8px;border-bottom:1px solid #eef3f7;vertical-align:to
 
 .spacer{flex:1}
 .footlogo{text-align:right;margin-top:14px}
-.footlogo img{height:30px;width:auto;opacity:.95;display:inline-block}
+.footlogo img{height:30px;width:auto;display:inline-block}
 .pfoot{margin-top:4px;border-top:1.5px solid var(--brand);padding-top:6px;font-size:8px;color:var(--paper-fg);text-align:center;line-height:1.6}
 
 /* ======================= Impression A4 ======================= */
@@ -132,8 +132,11 @@ table.lines td{padding:4px 8px;border-bottom:1px solid #eef3f7;vertical-align:to
   html,body{background:#fff}
   .wrap{display:block;padding:0;margin:0;max-width:none}
   .stage{overflow:visible;display:block}
-  /* la feuille remplit toute la hauteur A4 pour que le pied de page (poussé par .spacer) reste en bas */
-  .paper{box-shadow:none;width:auto;min-height:296mm;margin:0;padding:12mm 12mm}
+  /* pied de page FIXE en bas de chaque page imprimée (logo + mentions), robuste aux marges */
+  .paper{box-shadow:none;width:auto;min-height:auto;margin:0;padding:12mm 12mm 32mm}
+  .spacer{display:none}
+  .docfoot{position:fixed;left:0;right:0;bottom:0;padding:0 12mm 8mm;background:#fff}
+  .footlogo{margin-top:0}
   table.lines th,.pright .dt,.totals .r.ttc,.footlogo img,.pfoot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{size:A4;margin:0}
 }

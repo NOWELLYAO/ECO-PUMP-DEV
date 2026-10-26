@@ -446,8 +446,10 @@ export default function Page() {
             ) : null}
 
             <div className="spacer" />
-            <div className="footlogo"><img src="/logo.png" alt="" /></div>
-            <div className="pfoot">{COMPANY.legal}</div>
+            <div className="docfoot">
+              <div className="footlogo"><img src="/logo.png" alt="" /></div>
+              <div className="pfoot">{COMPANY.legal}</div>
+            </div>
           </article>
         </section>
       </div>
