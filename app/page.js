@@ -184,6 +184,20 @@ export default function Page() {
   const suffix = suffixFromName(S.client.name);
   const number =
     (S.type === "FACTURE" ? "FACT" : "DEV") + "-" + ddmmyy(S.date) + "-" + String(S.seq).padStart(2, "0") + (suffix ? "-" + suffix : "");
+
+  // Le nom de fichier proposé à l'impression = titre de l'onglet. On met le n° du
+  // document juste avant d'imprimer, puis on rétablit le titre normal ensuite.
+  useEffect(() => {
+    const base = "Devis & Factures — ECO PUMP AFRIK";
+    const onBefore = () => { document.title = number; };
+    const onAfter = () => { document.title = base; };
+    window.addEventListener("beforeprint", onBefore);
+    window.addEventListener("afterprint", onAfter);
+    return () => {
+      window.removeEventListener("beforeprint", onBefore);
+      window.removeEventListener("afterprint", onAfter);
+    };
+  }, [number]);
   const lettres =
     titre(enLettres(ttc)) + " " + (cur.replace("F CFA", "Francs CFA").replace("FCFA", "Francs CFA") || "Francs CFA");
 
@@ -193,7 +207,7 @@ export default function Page() {
         <div className="brand">ECO PUMP AFRIK<span>Devis & Factures</span></div>
         <div className="sp" />
         <button onClick={() => setS(blank())}>Nouveau</button>
-        <button className="primary" onClick={() => window.print()}>Imprimer / PDF</button>
+        <button className="primary" onClick={() => { document.title = number; window.print(); }}>Imprimer / PDF</button>
       </header>
 
       <div className="wrap">
