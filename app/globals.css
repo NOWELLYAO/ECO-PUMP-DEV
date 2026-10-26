@@ -29,6 +29,18 @@ button{font-family:var(--f-body)}
 .appbar button{border:1px solid var(--line);background:var(--panel-2);color:var(--fg);border-radius:9px;
   padding:9px 15px;font-weight:700;cursor:pointer;font-size:.92rem}
 .appbar button.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.appbar .flash{color:#1a8a52;font-weight:700;font-size:.85rem}
+
+/* bibliothèque de documents */
+.sub{font-size:.8rem;color:var(--muted);margin:0 0 6px;line-height:1.5}
+.lib{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.librow{display:flex;gap:7px;align-items:stretch}
+.libopen{flex:1;text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:9px;
+  padding:8px 11px;cursor:pointer;display:flex;flex-direction:column;gap:1px;color:var(--fg)}
+.libopen b{color:var(--brand-ink);font-size:.9rem;font-family:var(--f-display)}
+.libopen span{font-size:.75rem;color:var(--muted)}
+.libdel{border:1px solid var(--input-bd);background:transparent;color:var(--danger);border-radius:9px;cursor:pointer;width:38px;font-size:1.1rem}
+.imp{border:1px solid var(--line);background:var(--panel-2);color:var(--fg);border-radius:9px;padding:10px;font-weight:600;cursor:pointer;flex:1;min-width:120px;text-align:center}
 
 .wrap{display:grid;grid-template-columns:minmax(320px,420px) 1fr;gap:18px;
   padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));

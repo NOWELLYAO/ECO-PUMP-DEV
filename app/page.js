@@ -142,11 +142,15 @@ export default function Page() {
   const [S, setS] = useState(blank());
   const [ready, setReady] = useState(false);
   const [stampTime, setStampTime] = useState("");
+  const [library, setLibrary] = useState([]);
+  const [flash, setFlash] = useState("");
 
   useEffect(() => {
     try {
       const r = localStorage.getItem("ecopump_doc_v2");
       if (r) setS({ ...blank(), ...JSON.parse(r) });
+      const lib = localStorage.getItem("ecopump_library_v1");
+      if (lib) setLibrary(JSON.parse(lib));
     } catch (e) {}
     const d = new Date();
     setStampTime(("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2));
@@ -157,6 +161,11 @@ export default function Page() {
     if (!ready) return;
     try { localStorage.setItem("ecopump_doc_v2", JSON.stringify(S)); } catch (e) {}
   }, [S, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    try { localStorage.setItem("ecopump_library_v1", JSON.stringify(library)); } catch (e) {}
+  }, [library, ready]);
 
   const up = (patch) => setS((s) => ({ ...s, ...patch }));
   const upClient = (k, v) => setS((s) => ({ ...s, client: { ...s.client, [k]: v } }));
@@ -201,19 +210,83 @@ export default function Page() {
   const lettres =
     titre(enLettres(ttc)) + " " + (cur.replace("F CFA", "Francs CFA").replace("FCFA", "Francs CFA") || "Francs CFA");
 
+  // ----- Bibliothèque de documents (enregistrés dans ce navigateur) -----
+  const flashMsg = (m) => { setFlash(m); setTimeout(() => setFlash(""), 1800); };
+  const saveToLibrary = () => {
+    const entry = { id: Date.now(), number, type: S.type, date: S.date, client: S.client.name, total: ttc, doc: S };
+    setLibrary((lib) => {
+      const i = lib.findIndex((e) => e.number === number);
+      if (i >= 0) { const c = [...lib]; c[i] = { ...entry, id: lib[i].id }; return c; }
+      return [entry, ...lib];
+    });
+    flashMsg("Enregistré ✓");
+  };
+  const openEntry = (e) => { setS({ ...blank(), ...e.doc }); flashMsg("Document ouvert"); };
+  const delEntry = (id) => setLibrary((lib) => lib.filter((e) => e.id !== id));
+  const exportLib = () => {
+    try {
+      const blob = new Blob([JSON.stringify(library, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "ecopump_sauvegarde.json"; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {}
+  };
+  const importLib = (file) => {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const data = JSON.parse(r.result);
+        if (Array.isArray(data)) {
+          setLibrary((prev) => {
+            const map = new Map(prev.map((e) => [e.number, e]));
+            data.forEach((e) => map.set(e.number, e));
+            return [...map.values()];
+          });
+          flashMsg("Sauvegarde importée ✓");
+        }
+      } catch (e) { flashMsg("Fichier invalide"); }
+    };
+    r.readAsText(file);
+  };
+
   return (
     <>
       <header className="appbar no-print">
         <div className="brand">ECO PUMP AFRIK<span>Devis & Factures</span></div>
         <div className="sp" />
+        {flash ? <span className="flash">{flash}</span> : null}
         <button onClick={() => setS(blank())}>Nouveau</button>
+        <button onClick={saveToLibrary}>💾 Enregistrer</button>
         <button className="primary" onClick={() => { document.title = number; window.print(); }}>Imprimer / PDF</button>
       </header>
 
       <div className="wrap">
         {/* ========== Éditeur ========== */}
         <section className="panel no-print" aria-label="Éditeur">
-          <h2>Document</h2>
+          <h2>Documents enregistrés <em>({library.length})</em></h2>
+          {library.length === 0 ? (
+            <p className="sub">Aucun document enregistré. Cliquez « 💾 Enregistrer » en haut pour garder le document en cours et le rouvrir plus tard.</p>
+          ) : (
+            <div className="lib">
+              {library.map((e) => (
+                <div className="librow" key={e.id}>
+                  <button className="libopen" onClick={() => openEntry(e)} title="Ouvrir ce document">
+                    <b>{e.number}</b><span>{(e.client || "—")} · {frDate(e.date)}</span>
+                  </button>
+                  <button className="libdel" onClick={() => delEntry(e.id)} title="Supprimer">×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="tools">
+            <button onClick={exportLib}>Exporter la sauvegarde</button>
+            <label className="imp">Importer
+              <input type="file" accept="application/json" hidden onChange={(e) => e.target.files[0] && importLib(e.target.files[0])} />
+            </label>
+          </div>
+
+          <h2 style={{ marginTop: 18 }}>Document</h2>
           <div className="seg" role="group" aria-label="Type de document">
             <button aria-pressed={S.type === "DEVIS"} onClick={() => up({ type: "DEVIS" })}>Devis</button>
             <button aria-pressed={S.type === "FACTURE"} onClick={() => up({ type: "FACTURE" })}>Facture</button>
