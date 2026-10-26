@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 const COMPANY = {
   name: "Eco Pump AFRIK",
   phone: "+225 0707806359",
-  mail: "ouanlo.ouattara@ecopumpafrik.com",
+  mail: "ecopumpafrik2@gmail.com",
   addr: "Cocody - Angré 7e Tranche",
   web: "www.ecopumpafrik.com",
   legal:
-    "SARL U au Capital de 1 000 000 F CFA -  Siège Social : Cocody Angré 7e Tranche - Tel/FAX : 0707806359   N° RCCM : CI-ABJ-03-2025-B13-01148   N°CC : 2502156E - ECOBANK N° CI059 01010 122345076001 80 - E-mail : ouanlo.ouattara@ecopumpafrik.com - Site WEB : www.ecopumpafrik.com",
+    "SARL U au Capital de 1 000 000 F CFA -  Siège Social : Cocody Angré 7e Tranche - Tel/FAX : 0707806359   N° RCCM : CI-ABJ-03-2025-B13-01148   N°CC : 2502156E - ECOBANK N° CI059 01010 122345076001 80 - E-mail : ecopumpafrik2@gmail.com - Site WEB : www.ecopumpafrik.com",
 };
 
 /* ====== Propositions des listes déroulantes ====== */
